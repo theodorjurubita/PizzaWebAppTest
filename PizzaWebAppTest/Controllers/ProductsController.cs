@@ -4,22 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzaWebAppTest.Data;
 using PizzaWebAppTest.Models;
+using PizzaWebAppTest.ServiceContracts;
+using PizzaWebAppTest.Services;
 
 namespace PizzaWebAppTest.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductService _productService;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            return View(await _productService.ProductRepository.GetProducts());
         }
 
         // GET: Products/Details/5
@@ -30,8 +32,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productService.ProductRepository.GetProductByID(id);
             if (product == null)
             {
                 return NotFound();
@@ -55,8 +56,8 @@ namespace PizzaWebAppTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
+                _productService.ProductRepository.InsertProduct(product);
+                await _productService.Commit();
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -70,7 +71,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productService.ProductRepository.GetProductByID(id);
             if (product == null)
             {
                 return NotFound();
@@ -94,12 +95,12 @@ namespace PizzaWebAppTest.Controllers
             {
                 try
                 {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
+                    _productService.ProductRepository.UpdateProduct(product);
+                    await _productService.Commit();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!await ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -121,8 +122,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productService.ProductRepository.GetProductByID(id);
             if (product == null)
             {
                 return NotFound();
@@ -136,15 +136,16 @@ namespace PizzaWebAppTest.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            var product = await _productService.ProductRepository.GetProductByID(id);
+            _productService.ProductRepository.DeleteProduct(product.Id);
+            await _productService.Commit();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private async Task<bool> ProductExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            var products = await _productService.ProductRepository.GetProducts();
+            return products.Any(e => e.Id == id);
         }
     }
 }

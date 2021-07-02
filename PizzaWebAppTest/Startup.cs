@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PizzaWebAppTest.Data;
 using PizzaWebAppTest.Models;
+using PizzaWebAppTest.Repositories;
+using PizzaWebAppTest.RepositoryContracts;
+using PizzaWebAppTest.ServiceContracts;
+using PizzaWebAppTest.Services;
 
 namespace PizzaWebAppTest
 {
@@ -27,6 +31,11 @@ namespace PizzaWebAppTest
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductService, ProductService>();
+            
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
