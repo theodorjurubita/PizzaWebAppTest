@@ -48,7 +48,7 @@ namespace PizzaWebAppTest.Controllers
         public IActionResult Create()
         {
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id");
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Id");
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "ProductName");
             return View();
         }
 
@@ -66,7 +66,7 @@ namespace PizzaWebAppTest.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderProduct.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Id", orderProduct.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "ProductName", orderProduct.ProductId);
             return View(orderProduct);
         }
 
@@ -84,7 +84,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderProduct.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Id", orderProduct.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "ProductName", orderProduct.ProductId);
             return View(orderProduct);
         }
 
@@ -121,7 +121,7 @@ namespace PizzaWebAppTest.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderProduct.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Id", orderProduct.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "ProductName", orderProduct.ProductId);
             return View(orderProduct);
         }
 

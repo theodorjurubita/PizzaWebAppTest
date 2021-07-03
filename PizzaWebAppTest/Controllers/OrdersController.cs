@@ -3,25 +3,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PizzaWebAppTest.Data;
 using PizzaWebAppTest.Models;
+using PizzaWebAppTest.RepositoryContracts;
+using PizzaWebAppTest.ServiceContracts;
 
 namespace PizzaWebAppTest.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOrderService _orderService;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(IOrderService orderService)
         {
-            _context = context;
+            _orderService = orderService;
         }
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Orders.Include(o => o.ContactDetails);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _orderService.OrderRepository.GetOrders());
         }
 
         // GET: Orders/Details/5
@@ -32,9 +32,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.ContactDetails)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var order = await _orderService.OrderRepository.GetOrderByID(id);
             if (order == null)
             {
                 return NotFound();
@@ -44,9 +42,9 @@ namespace PizzaWebAppTest.Controllers
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Id");
+            ViewData["ContactDetailsId"] = new SelectList(await _orderService.ContactDetailsRepository.GetContactDetails(), "Id", "Id");
             return View();
         }
 
@@ -59,11 +57,11 @@ namespace PizzaWebAppTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
+                _orderService.OrderRepository.InsertOrder(order);
+                await _orderService.Commit();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Id", order.ContactDetailsId);
+            ViewData["ContactDetailsId"] = new SelectList(await _orderService.ContactDetailsRepository.GetContactDetails(), "Id", "Id", order.ContactDetailsId);
             return View(order);
         }
 
@@ -75,12 +73,12 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _orderService.OrderRepository.GetOrderByID(id);
             if (order == null)
             {
                 return NotFound();
             }
-            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Email", order.ContactDetailsId);
+            ViewData["ContactDetailsId"] = new SelectList(await _orderService.ContactDetailsRepository.GetContactDetails(), "Id", "Email", order.ContactDetailsId);
             return View(order);
         }
 
@@ -100,12 +98,12 @@ namespace PizzaWebAppTest.Controllers
             {
                 try
                 {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
+                    _orderService.OrderRepository.UpdateOrder(order);
+                    await _orderService.Commit();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderExists(order.Id))
+                    if (!await OrderExists(order.Id))
                     {
                         return NotFound();
                     }
@@ -116,7 +114,7 @@ namespace PizzaWebAppTest.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Id", order.ContactDetailsId);
+            ViewData["ContactDetailsId"] = new SelectList(await _orderService.ContactDetailsRepository.GetContactDetails(), "Id", "Id", order.ContactDetailsId);
             return View(order);
         }
 
@@ -128,9 +126,7 @@ namespace PizzaWebAppTest.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.ContactDetails)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var order = await _orderService.OrderRepository.GetOrderByID(id);
             if (order == null)
             {
                 return NotFound();
@@ -144,22 +140,23 @@ namespace PizzaWebAppTest.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
+            _orderService.OrderRepository.DeleteOrder(id);
+            await _orderService.Commit();
             return RedirectToAction(nameof(Index));
         }
 
         // GET: OrdersByUser
         public async Task<IActionResult> GetOrdersByUser(string userId)
         {
-            var applicationDbContext = _context.Orders.Include(o => o.ContactDetails).Where(o=>o.ContactDetails.UserId == userId);
-            return View("Index",await applicationDbContext.ToListAsync());
+            var orders = await _orderService.OrderRepository.GetOrders();
+            var ordersByUser = orders.Where(o => o.ContactDetails.UserId == userId);
+            return View("Index", ordersByUser.ToList());
         }
 
-        private bool OrderExists(int id)
+        private async Task<bool> OrderExists(int id)
         {
-            return _context.Orders.Any(e => e.Id == id);
+            var orders = await _orderService.OrderRepository.GetOrders();
+            return orders.Any(e => e.Id == id);
         }
     }
 }

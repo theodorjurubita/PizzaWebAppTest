@@ -36,8 +36,10 @@ namespace PizzaWebAppTest
 
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IContactDetailsRepository, ContactDetailsRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
             
-
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

@@ -1,8 +1,21 @@
-﻿@{
+﻿@inject SignInManager<ApplicationUser> signInManager;
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div style="background-color:rgb(47, 49, 51)">
+    @if (signInManager.IsSignedIn(User))
+    {
+        <div class="alert alert-success" role="alert">
+            Utilizatorul este logat!
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            Utilizator nelogat!
+        </div>
+    }
     <div>
         <img src="https://i.imgur.com/xvXh2M2.jpg">
     </div>
