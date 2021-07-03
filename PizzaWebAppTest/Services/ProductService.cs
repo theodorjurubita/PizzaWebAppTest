@@ -8,7 +8,7 @@ namespace PizzaWebAppTest.Services
 {
     public class ProductService : IProductService
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private ProductRepository _products;
         public IProductRepository ProductRepository
         {

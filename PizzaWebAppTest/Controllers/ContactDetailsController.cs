@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PizzaWebAppTest.Data;
 using PizzaWebAppTest.Models;
@@ -143,6 +140,12 @@ namespace PizzaWebAppTest.Controllers
             _context.ContactDetailsList.Remove(contactDetails);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: ContactDetailsByUserId
+        public async Task<IActionResult> ContactDetailsByUserId(string userId)
+        {
+            return View("Index", await _context.ContactDetailsList.Where(c => c.UserId == userId).ToListAsync());
         }
 
         private bool ContactDetailsExists(int id)

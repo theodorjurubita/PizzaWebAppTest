@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject SignInManager<ApplicationUser> signInManager;
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PizzaWebAppTest</title>
+    <title>@ViewData["Title"] - Pizzeria Dono</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -11,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">PizzaWebAppTest</a>
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Pizzeria Dono</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -19,22 +20,40 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Acasa</a>
                         </li>
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Pizza</a>
+                            </li>
+                            if (User.IsInRole("Client"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Orders" asp-action="GetOrdersByUser" asp-route-userId=@User.FindFirst(m => m.Type == ClaimTypes.NameIdentifier).Value>Livrarile mele</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="ContactDetails" asp-action="ContactDetailsByUserId" asp-route-userId=@User.FindFirst(m => m.Type == ClaimTypes.NameIdentifier).Value>Detaliile mele</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="OrderProducts" asp-action="OrderProductsByUserId" asp-route-userId=@User.FindFirst(m => m.Type == ClaimTypes.NameIdentifier).Value>Produse din livrarile mele</a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Orders" asp-action="Index">Livrari</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="ContactDetails" asp-action="Index">Detalii Clienti</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="OrderProducts" asp-action="Index">ProduseLivrare</a>
+                                </li>
+                            }
+                        }
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Orders" asp-action="Index">Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ContactDetails" asp-action="Index">ContactDetails</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="OrderProducts" asp-action="Index">OrderProducts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-controller="Contact" asp-action="Index">Contact</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -50,7 +69,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - PizzaWebAppTest - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2021 - Pizza Craiova Dono - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 

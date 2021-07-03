@@ -13,6 +13,12 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactDetails.Id)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ContactDetails)
             </th>
             <th>
@@ -25,7 +31,15 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.ContactDetails.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactDetails.FirstName) |
+                @Html.DisplayFor(modelItem => item.ContactDetails.LastName) |
+                @Html.DisplayFor(modelItem => item.ContactDetails.Email)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateOfOrder)

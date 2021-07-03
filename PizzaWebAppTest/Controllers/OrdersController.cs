@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -82,7 +80,7 @@ namespace PizzaWebAppTest.Controllers
             {
                 return NotFound();
             }
-            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Id", order.ContactDetailsId);
+            ViewData["ContactDetailsId"] = new SelectList(_context.ContactDetailsList, "Id", "Email", order.ContactDetailsId);
             return View(order);
         }
 
@@ -150,6 +148,13 @@ namespace PizzaWebAppTest.Controllers
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: OrdersByUser
+        public async Task<IActionResult> GetOrdersByUser(string userId)
+        {
+            var applicationDbContext = _context.Orders.Include(o => o.ContactDetails).Where(o=>o.ContactDetails.UserId == userId);
+            return View("Index",await applicationDbContext.ToListAsync());
         }
 
         private bool OrderExists(int id)

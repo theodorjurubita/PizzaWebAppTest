@@ -4,16 +4,22 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Pizza</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn-success" asp-action="Create">Creeaza o Pizza noua!</a>
 </p>
+<div class="Descriere-1">
+    <p> Preparata dupa retete traditionale, pizza Dono iti pune la dispozitie o gama variata de sortimente din care poti alege ceva pe gustul tau. Ingredientele proaspete si diverse iti rasfata papilele gustative cu arome atent selectionate pentru a-ti oferi o masa bogata in nutrienti si savuroasa pe deasupra. Pe langa produse de calitate, pizza Dono vine in intampinarea clientilor cu o multime de oferte si promotii, menite sa le ofere acestora o experienta inedita.</p>
+</div>
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductDescription)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Price)
@@ -22,20 +28,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price) RON
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn-primary">Editeaza</a> |
+                    <a class="btn-warning" asp-action="Details" asp-route-id="@item.Id">Detailii</a> |
+                    <a class="btn-danger" asp-action="Delete" asp-route-id="@item.Id">Sterge</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

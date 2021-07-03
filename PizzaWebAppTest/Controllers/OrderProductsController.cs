@@ -156,6 +156,16 @@ namespace PizzaWebAppTest.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: OrderProductsByUserId
+        public async Task<IActionResult> OrderProductsByUserId(string userId)
+        {
+            var applicationDbContext = _context.OrderProducts.Include(o => o.Order)
+                .Include(o => o.Product)
+                .Include(o => o.Order.ContactDetails)
+                .Where(o => o.Order.ContactDetails.UserId == userId);
+            return View("Index", await applicationDbContext.ToListAsync());
+        }
+
         private bool OrderProductExists(int id)
         {
             return _context.OrderProducts.Any(e => e.Id == id);

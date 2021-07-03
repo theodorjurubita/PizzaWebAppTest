@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PizzaWebAppTest.Data;
 using PizzaWebAppTest.Models;
 using PizzaWebAppTest.ServiceContracts;
-using PizzaWebAppTest.Services;
 
 namespace PizzaWebAppTest.Controllers
 {
@@ -42,17 +41,17 @@ namespace PizzaWebAppTest.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProductName,Price")] Product product)
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Create([Bind("Id,ProductName,ProductDescription,Price")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +63,7 @@ namespace PizzaWebAppTest.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,11 +80,10 @@ namespace PizzaWebAppTest.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductName,Price")] Product product)
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductName,ProductDescription,Price")] Product product)
         {
             if (id != product.Id)
             {
@@ -115,6 +114,7 @@ namespace PizzaWebAppTest.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,6 +134,7 @@ namespace PizzaWebAppTest.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _productService.ProductRepository.GetProductByID(id);
@@ -149,3 +150,4 @@ namespace PizzaWebAppTest.Controllers
         }
     }
 }
+
