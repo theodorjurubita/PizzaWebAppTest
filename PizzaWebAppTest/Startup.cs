@@ -34,12 +34,13 @@ namespace PizzaWebAppTest
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            //Registering repositories and services to dependecy injection
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IContactDetailsRepository, ContactDetailsRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
-            
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
